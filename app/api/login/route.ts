@@ -1,37 +1,30 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import dbConnect from '@/lib/mongoose';
 import User from '@/models/User';
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method not allowed' });
-  }
-
+export async function POST(request: NextRequest) {
   try {
     await dbConnect();
     
-    const { email, password } = req.body;
+    const { email, password } = await request.json();
 
     // Find user by email
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+      return NextResponse.json({ message: 'Invalid email or password' }, { status: 401 });
     }
 
     if (user.blocked) {
-      return res.status(403).json({ message: 'Your account is blocked. Please contact support.' });
+      return NextResponse.json({ message: 'Your account is blocked. Please contact support.' }, { status: 403 });
     }
 
     // Compare password
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+      return NextResponse.json({ message: 'Invalid email or password' }, { status: 401 });
     }
 
     // Don't send password in response
@@ -45,7 +38,7 @@ export default async function handler(
     // Log admin login
     if (user.role === 'admin') {
       try {
-        const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '';
+        const ip = request.headers.get('x-forwarded-for') || request.ip || '';
         // Directly use the model to avoid fetch overhead
         const AdminLoginLog = (await import('@/models/AdminLoginLog')).default;
         await AdminLoginLog.create({
@@ -58,12 +51,12 @@ export default async function handler(
       }
     }
 
-    res.status(200).json({ 
+    return NextResponse.json({ 
       message: 'Login successful',
       user: userWithoutPassword
     });
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
   }
-} 
+}
