@@ -2,8 +2,8 @@
 import React, { FC } from "react";
 import CodeGuruLogo from "./CodeGuruLogo";
 import { NavbarData } from "@/constants";
+import { useOutsideClick } from "@/hooks/hooks/useOutsideClick";
 import SocailLinks from "./SocailLinks";
-import { useOutSideClick } from "@/hooks/use-outside-click";
 import { X } from "lucide-react";
 import Link from "next/link";
 
@@ -14,7 +14,7 @@ interface SidebarProps {
 }
 
 const Sidebar: FC<SidebarProps> = ({ isOpen, onClose, pathname }) => {
-  const SidebarRef = useOutSideClick<HTMLDivElement>(onClose);
+  const SidebarRef = useOutsideClick<HTMLDivElement>(onClose);
   return (
     <div
       ref={SidebarRef}

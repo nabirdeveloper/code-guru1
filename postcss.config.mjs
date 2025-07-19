@@ -1,9 +1,4 @@
 const config = {
-  content: [
-    "./src/**/*.{js,jsx,ts,tsx}",
-    "./pages/**/*.{js,jsx,ts,tsx}",
-    "./components/**/*.{js,jsx,ts,tsx}",
-  ],
   theme: {
     extend: {
       colors: {
@@ -39,4 +34,3 @@ const config = {
 };
 
 export default config;
-

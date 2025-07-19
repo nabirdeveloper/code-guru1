@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
-import { motion, useAnimation, stagger } from "framer-motion";
+import { motion, useAnimation } from "framer-motion";
 
 interface HeadlineProps {
   title: string;
